@@ -1,0 +1,179 @@
+name: List my service
+description: Get your tool into the SuperRepo catalog — the buttons on every repo page.
+title: "[Service request] "
+labels: ["service request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        SuperRepo turns every repo into a SuperRepo — a prompt, a diagram, a wiki, an
+        IDE, a podcast and a lot more. If yours is one of those tools, it belongs here.
+
+        **What you get:** a row rendered on every repo page, plus the panel, the
+        right-click menu and the omnibox. Your name, your colour, your glyph, and
+        your own one-line description in your own words.
+
+        **What we promise:** no proxy, no redirect through us, no analytics on your
+        traffic, no cut. We don't sell placement — there is no paid pin and never
+        will be. If a probe finds your service broken we contact you before we
+        record anything.
+
+        Fields marked required are the ones we genuinely can't guess. Everything else
+        helps but has a sensible default.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## The four things a service has to meet
+
+        1. **It takes a GitHub URL** — the shape `https://<host>/<owner>/<repo>[/<page>/<branch>/<path]]`,
+           or a subset of it — or it accepts a full GitHub URL as a parameter, or it is
+           a local CLI worth handing a repo URL to.
+        2. **It works**, and stays working. We probe the URLs periodically.
+        3. **It isn't an alias** of a row already here. A second name for a
+           destination we already list doesn't become a second button — but a genuinely
+           different entry point to the same product is welcome, and worth explaining below.
+        4. **It fits a category**, so the panel groups sensibly.
+
+  - type: input
+    id: service-name
+    attributes:
+      label: Service name
+      description: The name people know it by. This is what the button and the panel row will say.
+      placeholder: GitDiagram
+    validations:
+      required: true
+
+  - type: input
+    id: homepage
+    attributes:
+      label: Homepage URL
+      description: Where someone lands when they click through from the row.
+      placeholder: https://gitdiagram.com/
+    validations:
+      required: true
+
+  - type: dropdown
+    id: form
+    attributes:
+      label: How does your service take a repo?
+      description: Rule 1. Pick whichever applies — the first that does.
+      multiple: false
+      options:
+        - "It rewrites the GitHub URL — gitingest.com/owner/repo"
+        - "It takes the full GitHub URL as a parameter, like gitpod.io/#<url>"
+        - "It's a local CLI — someone hands it a repo URL or owner/repo"
+    validations:
+      required: true
+
+  - type: input
+    id: example-url
+    attributes:
+      label: A working URL for one real public repo
+      description: >
+        The single most useful thing you can send. Build it yourself from a repo anyone
+        can open — the URL a user would get after clicking your button — and paste it
+        here. If a row can't be demonstrated, it can't be listed.
+      placeholder: https://gitdiagram.com/coderamp-labs/gitingest
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Rule 4. Where should this sit in the panel?
+      options:
+        - "Feed it to an AI"
+        - "Diagrams & structure"
+        - "Open & run"
+        - "History & analytics"
+        - "More views"
+        - "Local command line"
+        - "Reference"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: path-granularity
+    attributes:
+      label: How much of a path does it take?
+      description: >
+        SuperRepo narrows the target for you depending on whether the user is looking at
+        a file or a directory, so this decides what a button on a file actually does.
+      options:
+        - "The exact file path — including tree and branch"
+        - "A directory path — I take the containing folder"
+        - "The repo root only — I don't take a path"
+    validations:
+      required: true
+
+  - type: textarea
+    id: blurb
+    attributes:
+      label: Your one-line description
+      description: >
+        This is the text shown under the service name, word for word. It is the line
+        that has to make someone click, so write it in your voice — we don't rewrite it.
+      placeholder: Interactive architecture diagram of the whole project
+    validations:
+      required: true
+
+  - type: textarea
+    id: distinct
+    attributes:
+      label: If this is a second way into something already listed, say which row and why it's different
+      description: >
+        Rule 3. A new entry point is fine and often genuinely useful — a hosted tier
+        versus a CLI, a private-repo route, a different rendering of the same project.
+        Just be explicit, so we don't add a button that duplicates one already there.
+      placeholder: "Similar to Repomix, but this is the browser app rather than the CLI."
+
+  - type: checkboxes
+    id: hosts
+    attributes:
+      label: Which of these does it handle?
+      description: >
+        SuperRepo runs on github.com, gitlab.com, bitbucket.org and codeberg.org. On
+        the hosts your service doesn't handle, its row simply won't be offered rather
+        than shown and broken — so it's worth knowing.
+      options:
+        - label: github.com only
+          required: false
+        - label: gitlab.com
+          required: false
+        - label: bitbucket.org
+          required: false
+        - label: codeberg.org
+          required: false
+
+  - type: checkboxes
+    id: private-repos
+    attributes:
+      label: Private repos
+      description: We link out, so auth is your side of the handoff — worth documenting for users either way.
+      options:
+        - label: Works with public repos
+          required: true
+        - label: Also works with private repos — needs a token or a login
+          required: false
+
+  - type: input
+    id: contact
+    attributes:
+      label: Where do we send change notices?
+      description: >
+        The one thing we ask in return: a heads-up before you break a URL, so we can
+        fix it and tell you we did, instead of quietly repairing it and you never
+        finding out. An issue, a mailing address, a channel — whatever you'd actually read.
+      placeholder: github.com/you/your-tool/issues
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: >
+        Free to use for anything the questions above missed — a preferred entry point
+        for your blurb, a tier you'd rather we sent people to, docs worth linking.

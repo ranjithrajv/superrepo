@@ -1,0 +1,73 @@
+{
+  "manifest_version": 3,
+  "name": "SuperRepo",
+  "version": "0.1.0",
+  "description": "Turn every repo into a SuperRepo — a prompt, a diagram, a wiki, an IDE, a podcast and more. Not affiliated with GitHub.",
+  "action": {
+    "default_title": "SuperRepo — toggle the panel",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png",
+    "128": "icons/icon128.png"
+  },
+  "options_ui": {
+    "page": "src/options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "scripts": [
+      "src/background.firefox.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://github.com/*/*"
+      ],
+      "js": [
+        "src/content-styles.js",
+        "src/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "clipboardWrite",
+    "scripting"
+  ],
+  "optional_host_permissions": [
+    "https://gitlab.com/*/*"
+  ],
+  "omnibox": {
+    "keyword": "gp"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+G"
+      }
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "superepo@ranjithraj.dev",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}

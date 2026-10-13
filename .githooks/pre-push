@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# The full gate, run before anything reaches the remote.
+#
+# Stricter than pre-commit on purpose: this is the last point where a broken
+# test, a stale service table or a failing build can be caught locally instead
+# of in CI. `npm run smoke` is included because it is the only check that loads
+# the built extension into a real browser — it is what catches the bugs unit
+# tests structurally cannot.
+#
+# `git push --no-verify` skips this.
+
+set -e
+
+echo "pre-push: npm test"
+npm test
+
+echo "pre-push: npm run check"
+npm run check
+
+echo "pre-push: npm run build"
+npm run build
+
+# Smoke needs Chromium and network access to github.com. A machine without
+# either is a real thing, so it warns rather than blocking the push — CI is the
+# authority on it.
+if [ "${SUPERREPO_SKIP_SMOKE:-0}" = "1" ]; then
+  echo "pre-push: skipping smoke (SUPERREPO_SKIP_SMOKE=1)"
+elif command -v npx >/dev/null 2>&1; then
+  echo "pre-push: npm run smoke"
+  npm run smoke
+else
+  echo "pre-push: npx not found, skipping smoke — CI will run it"
+fi
+
+echo "pre-push: ok"

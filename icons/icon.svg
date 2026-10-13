@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="SuperRepo">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5b6cff"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="url(#g)"/>
+  <g fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round">
+    <path d="M44 84V62a22 22 0 0 1 22-22h8"/>
+    <path d="M100 88v18"/>
+    <path d="M91 97h18"/>
+  </g>
+  <circle cx="44" cy="92" r="11" fill="#fff"/>
+  <circle cx="84" cy="40" r="11" fill="#fff"/>
+</svg>

@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Gate every commit on the checks CI will run.
+#
+# Installed by `npm run setup`, which points core.hooksPath at this directory.
+# Delete the hook with `git config --unset core.hooksPath` — or keep it, because
+# a commit that doesn't build is a commit somebody else has to fix.
+#
+# --no-verify skips this, and `git commit -m "..." --no-verify` is the escape
+# hatch for the rare commit that must land before a fix can be written.
+
+set -e
+
+echo "pre-commit: running npm run check"
+
+npm run check
+
+echo "pre-commit: ok"

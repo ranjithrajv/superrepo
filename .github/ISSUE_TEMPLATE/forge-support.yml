@@ -1,0 +1,95 @@
+name: Expand a service to more forge platforms
+description: Help a listed service (or a new one) work on GitLab, Bitbucket, Codeberg, Gitea, SourceHut, etc. — upstream contribution or independent service.
+title: "[Forge support] "
+labels: ["forge support", "service request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        SuperRepo runs on github.com, gitlab.com, bitbucket.org and codeberg.org, but
+        most of the services it points at only understand GitHub URLs. A button that
+        is offered on GitLab and opens a GitHub-templated URL is worse than no
+        button, so on those hosts we list only the services that genuinely handle
+        them.
+
+        This issue is the place to fix that, two different ways:
+
+        1. **Upstream contribution** — you (or we) send a pull request or feature
+           request to an existing service so it learns the new forge's URL shape.
+        2. **Independent service** — someone builds a GitLab-, Bitbucket- or
+           Codeberg-native alternative (a fork, a mirror service, or a from-scratch
+           tool) and we list it beside the original rather than replacing it.
+
+        Pick whichever you are doing below. We will help coordinate either.
+
+  - type: dropdown
+    id: approach
+    attributes:
+      label: Which path are you taking?
+      options:
+        - "Upstream contribution to an existing service"
+        - "Building an independent service for another forge"
+        - "Just reporting that an upstream already added support"
+    validations:
+      required: true
+
+  - type: input
+    id: service
+    attributes:
+      label: Service name (as listed, or the planned new one)
+      placeholder: GitDiagram
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: forges
+    attributes:
+      label: Which forge platforms should it cover?
+      description: Tick every forge you are working on. github.com stays implicit.
+      options:
+        - label: gitlab.com
+        - label: bitbucket.org
+        - label: codeberg.org / Gitea / Forgejo
+        - label: sourcehut.org
+        - label: self-hosted Gitea / GitLab
+        - label: Other (describe in notes)
+
+  - type: input
+    id: upstream-repo
+    attributes:
+      label: Upstream repository or contact
+      description: Where the maintainers are — issue tracker, repo URL, or mailing address. Required for the upstream path.
+      placeholder: https://github.com/ahmedkhaleel2004/gitdiagram/issues
+    validations:
+      required: false
+
+  - type: input
+    id: url-template
+    attributes:
+      label: Resulting URL template (if known)
+      description: >
+        The URL a user would get after clicking your button, including the new
+        forge's host or path. Use {owner}, {repo}, {ref}, {path} placeholders.
+        Leave blank if you do not know it yet.
+      placeholder: https://gitdiagram.com/{owner}/{repo}
+    validations:
+      required: false
+
+  - type: input
+    id: upstream-pr
+    attributes:
+      label: Link to upstream PR / issue (if filed)
+      description: So we can follow along and list the support once it ships.
+      placeholder: https://github.com/.../pull/123
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: >
+        Scope concerns, auth/private-repo behaviour, what blocks you, or why an
+        independent service is the better answer here. If you are building an
+        independent service, say what makes it genuinely different so we do not
+        collapse it into the original row.

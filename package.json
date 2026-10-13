@@ -1,0 +1,22 @@
+{
+  "name": "superepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Turn every repo into a SuperRepo — that gives you a prompt, a diagram, a wiki, an IDE and a podcast and a lot more.",
+  "license": "MIT",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "icons": "node scripts/make-icons.mjs",
+    "check": "node scripts/gen-partners.mjs --check && node scripts/gen-catalog-page.mjs --check && node scripts/check.mjs",
+    "catalog": "node scripts/gen-catalog-page.mjs",
+    "probe": "node scripts/probe.mjs",
+    "partners": "node scripts/gen-partners.mjs",
+    "test": "node --test test/*.test.mjs",
+    "build": "node scripts/build.mjs",
+    "package": "node scripts/build.mjs --zip",
+    "smoke": "node scripts/smoke.mjs",
+    "shots": "node scripts/screenshots.mjs",
+    "preview": "node scripts/preview.mjs"
+  }
+}

@@ -1,0 +1,20 @@
+blank_issues_enabled: false
+contact_links:
+  - name: List my service
+    url: https://github.com/ranjithrajv/superrepo/issues/new?template=partners.yml
+    about: Get your tool into the catalog — one working URL is enough. No code needed.
+  - name: Expand a service to more forge platforms
+    url: https://github.com/ranjithrajv/superrepo/issues/new?template=forge-support.yml
+    about: Upstream contribution or independent service for GitLab, Bitbucket, Codeberg and friends.
+  - name: Browse the catalog first
+    url: https://github.com/ranjithrajv/superrepo/blob/main/docs/CATALOG.md
+    about: Every listed tool, what each rewrite rule sends it, and when it was last probed.
+  - name: How to add a service (contributors)
+    url: https://github.com/ranjithrajv/superrepo/blob/main/CONTRIBUTING.md
+    about: Adding a service is one object in src/catalog.js.
+  - name: Read PARTNERS.md
+    url: https://github.com/ranjithrajv/superrepo/blob/main/PARTNERS.md
+    about: What we promise, the four admission rules, and how to fix your row.
+  - name: Privacy
+    url: https://github.com/ranjithrajv/superrepo/blob/main/PRIVACY.md
+    about: What is stored, what is sent, and why the answer is nothing.

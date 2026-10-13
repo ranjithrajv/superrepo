@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SuperRepo — settings</title>
+    <link rel="stylesheet" href="ui.css" />
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="page-head">
+        <h1>SuperRepo</h1>
+        <p class="lede">
+          Every setting lives in this browser. No account, no network calls, no analytics.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Buttons and services</h2>
+        <p class="hint">
+          Everything about the buttons in the repo header — what each one is for, which categories
+          get a button, which services appear at all, where they sit and what they look like — is set
+          from the panel itself. Open any repo page, click the <strong>More</strong> button, and use
+          <strong>Settings</strong> at the foot of the panel.
+        </p>
+      </section>
+
+      <details class="card advanced">
+        <summary class="card-summary">Advanced — other sites, your own services, reset</summary>
+        <div class="advanced-body">
+      <section class="card">
+        <h2>Other sites</h2>
+        <p class="hint">
+          Buttons appear on <strong>github.com</strong> out of the box. Adding another site asks
+          your browser for access to it — SuperRepo only ever reads that page to draw its own
+          buttons in it, and removing the access takes the buttons away again.
+        </p>
+        <ul id="hostList" class="list"></ul>
+      </section>
+      <section class="card">
+        <h2>Add your own</h2>
+        <form id="customForm" class="grid" autocomplete="off">
+          <div class="field">
+            <label for="customName">Name</label>
+            <input type="text" id="customName" required maxlength="60" placeholder="My viewer" />
+          </div>
+          <div class="field wide">
+            <label for="customTemplate">URL template</label>
+            <input
+              type="text"
+              id="customTemplate"
+              required
+              maxlength="400"
+              placeholder="https://example.com/{owner}/{repo}"
+            />
+          </div>
+          <div class="field wide">
+            <label for="customBlurb">Description <span class="opt">optional</span></label>
+            <input type="text" id="customBlurb" maxlength="120" placeholder="What it shows" />
+          </div>
+          <div class="field">
+            <label for="customIcon">Icon</label>
+            <div class="icon-pick">
+              <span id="customIconPreview" class="glyph" aria-hidden="true"></span>
+              <select id="customIcon"></select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="customColor">Colour <span class="opt">optional</span></label>
+            <input type="color" id="customColor" value="#5b6cff" />
+          </div>
+          <div class="field wide actions">
+            <button class="btn btn--primary" type="submit">Add service</button>
+          </div>
+        </form>
+
+        <p class="hint">
+          Placeholders:
+          <code>{owner}</code> <code>{repo}</code> <code>{ref}</code> <code>{path}</code>
+          <code>{url}</code> <code>{repoUrl}</code> <code>{ghSuffix}</code> <code>{ingestSuffix}</code>
+        </p>
+
+        <ul id="customList" class="list"></ul>
+      </section>
+      <section class="card">
+        <h2>Reset</h2>
+        <p class="hint">Restores the default order, re-hides the opt-in services, and removes your own.</p>
+        <button id="reset" class="btn" type="button">Restore defaults</button>
+      </section>
+        </div>
+      </details>
+
+
+      <footer class="page-foot">
+        <span>SuperRepo <span id="version"></span></span>
+        <span id="status" role="status" aria-live="polite"></span>
+      </footer>
+    </main>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

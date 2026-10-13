@@ -1,0 +1,295 @@
+# SuperRepo
+
+Turn every repo into a **SuperRepo** — that gives you a **prompt**, a **diagram**, a **wiki**, an
+**IDE** and a **podcast** and a lot more.
+
+Almost every tool in this space works the same way: take the GitHub URL, swap a token. `github.com`
+→ `gitingest.com` gives you a prompt-ready digest. `hub` → `diagram` gives you an architecture
+diagram. `gitpod.io/#` in front gives you a dev environment. So this extension is a catalog of those
+rewrites, with buttons injected into the page itself — **no backend, no API keys, no network calls
+of its own.**
+
+The catalog keeps growing. Loads in **Chrome, Edge, Brave and Firefox** from one source tree.
+
+---
+
+## Install
+
+```bash
+npm run build          # writes dist/chrome and dist/firefox
+```
+
+**Chrome / Edge / Brave** — `chrome://extensions` → enable *Developer mode* → *Load unpacked* →
+pick `dist/chrome`.
+
+**Firefox** — `about:debugging#/runtime/this-firefox` → *Load Temporary Add-on* →
+pick `dist/firefox/manifest.json`.
+
+> Chromium is required for the smoke test; branded Chrome 137+ ignores `--load-extension`.
+
+## Preview it without installing
+
+```bash
+npm run preview        # http://127.0.0.1:4173
+```
+
+Serves a mock GitHub repo page with the real content script injected, plus the options page. Only
+the browser APIs are stubbed — parsing, the catalog and the payload builder are the shipping code.
+
+---
+
+## Using it
+
+**On the page.** Buttons appear in the repo header, right after Watch / Fork / Star. They are
+**glyph** — one small monochrome SVG per service, tinted with that service's colour, with the name
+and description in the tooltip — so they sit in GitHub's header like GitHub's own icons and follow
+the page's light/dark theme. One button ships by default per category that has an enabled service — and
+each group fills with whichever service you click most in it. Pin by name
+instead, up to eight, or switch to icon-and-name, in
+icon-and-name, in Settings. **More** opens a panel with everything else: filter, grouped sections, a
+preview of where each row points, and a copy button per row.
+
+**Path-aware.** On `github.com/o/r/blob/main/lib/x.js`:
+
+- GitIngest gets `…/tree/main/lib` — it ingests a directory, so a file view narrows to the folder
+  containing it
+- UIthub, github.dev and Git History get the exact file
+- DeepWiki, OSS Insight and Star History stay at the repo root, because that is all they accept
+
+Repo-level services are not offered at all when they cannot work — on GitLab the list drops to the
+few that genuinely work there (Gitpod, Repomix, GitIngest CLI, code2prompt, code2flow).
+
+GitLab is **opt-in**: the install prompt asks for `github.com` and nothing else. Turn GitLab on in
+Settings → *Other sites*, which asks your browser for that one host and registers the content
+script for it. Removing the access takes the buttons away again. The right-click menu, the
+omnibox and `gp` keep working on GitLab, Bitbucket and Codeberg without any access at all, since a
+context menu is matched by URL and needs no host permission.
+
+**Three other ways in:**
+
+| Where | How |
+|---|---|
+| **Keyboard** | `Alt+Shift+G` toggles the panel. `/` focuses the filter, `↑`/`↓` move, `Enter` opens, `Esc` closes. |
+| **Right-click** | On a repo page, or on any link to one: *SuperRepo →* service. |
+| **Address bar** | Type `gp`, then a repo URL or `owner/repo`. Suggestions are the services themselves. |
+
+**Copy is first-class** — half the real use of these tools is pasting a repo URL into a chat, so
+every row has a copy button. ⌘/Ctrl-click opens in a background tab. A *Frequently used* section
+learns your top four.
+
+### Where the buttons land
+
+GitHub replaced the old `ul.pagehead-actions` header with Primer React components whose class names
+are hashed and unstable, so the extension anchors on GitHub's own `data-testid` hooks —
+`repo-header-actions`, then `star-button` — with the legacy selectors as fallbacks. If none of them
+are found (another GitHub redesign, or a different host like GitLab), the cluster becomes a floating
+one in the bottom-right rather than disappearing. Settings can force either mode, or turn the
+in-page UI off entirely and rely on the menu and address bar.
+
+---
+
+## What it reaches
+
+Every service ships visible except the ones that opt out — those are one click away in Settings.
+
+| Group | Services |
+|---|---|
+| Prompt-ready digest | GitIngest · UIthub |
+| AI-generated wiki | DeepWiki |
+| For AI agents | GitMCP · GitHub.gg · GitSummarize · GitReverse |
+| Diagrams & structure | GitDiagram · code2flow |
+| Editor in the page | github.dev · VS Code for the Web · GitHub1s |
+| Cloud workspace | Gitpod · StackBlitz · CodeSandbox · Codeflow (`pr.new`) · bolt.new |
+| History | Git History · GitHubTracker |
+| Analytics | OSS Insight · Star History |
+| More views | GitPodcast |
+| Local CLI | Repomix · GitIngest CLI · code2prompt |
+
+`SERVICES.md` is the full reference: every rewrite rule, the URLs, and a graveyard of entries that
+died or were renamed — verified by HTTP probe on **2026-10-13**.
+
+Two documents exist for the people this catalog is built out of.
+
+**If you maintain a tool that turns a repo into something else, you can get it
+listed in one issue, no code:**
+**[List my service →](https://github.com/ranjithrajv/superrepo/issues/new?template=partners.yml)**.
+[`PARTNERS.md`](PARTNERS.md) is the deal — what we promise, the mechanical rule
+for getting listed, and how to fix or add your own row.
+
+**If you want to take the catalog beyond GitHub** — to GitLab, Bitbucket,
+Codeberg and other forges — the routes are in
+[`docs/FORGES.md`](docs/FORGES.md): upstream contributions to existing tools, or
+building and listing an independent forge-native one. Entry point:
+**[Expand a service to more forge platforms →](https://github.com/ranjithrajv/superrepo/issues/new?template=forge-support.yml)**.
+
+If you maintain an extension that also puts buttons in GitHub's header,
+[`docs/DOM.md`](docs/DOM.md) is the published marker and anchor contract, so the
+two of you can coexist instead of stacking clusters on top of each other.
+
+---
+
+## Privacy, and the permission trade-off
+
+| Permission | Why |
+|---|---|
+| `storage` | Settings and usage counters, in `storage.local`. |
+| `contextMenus` | The right-click menu. |
+| `clipboardWrite` | Copy buttons. |
+| content script on `github.com` | This is the UI. It is what lets the buttons appear without you opening anything. |
+| optional host access for `gitlab.com` | Off until you turn it on in Settings. Nothing is requested at install. |
+| `scripting` | Used only to inject into an optional host you have explicitly granted. It asks for nothing on its own. |
+
+No analytics, no account, no remote code, no `tabs`, no `activeTab`, no `webRequest`. Nothing is
+sent anywhere — the extension only ever opens the URL you picked. The Firefox manifest declares
+`data_collection_permissions: { required: ["none"] }` to make that explicit on AMO.
+
+**Be aware of the trade-off:** because the interface lives in the page, the install prompt will ask
+for access to those four sites. A popup-only version needs no host access at all, which is a smaller
+ask — but it also means a click before you can see anything. If that trade does not suit you, the
+placement setting can be set to *Nowhere* so the content script stops rendering (the script itself
+still loads, being declared statically).
+
+---
+
+## Development
+
+```bash
+npm run icons        # rasterise icons/icon.svg → 16/32/48/96/128 PNG
+npm test             # unit tests: URL parsing, every rewrite rule, the panel payload
+npm run check        # manifests, referenced files, JS parses, icons, permission sanity
+npm run build        # dist/chrome + dist/firefox
+npm run package      # the above plus uploadable .zip files
+npm run smoke        # load it in headless Chromium and assert behaviour on a real GitHub page
+npm run preview      # mock GitHub page + options page, no install needed
+```
+
+```
+src/
+  catalog.js           the service table, as data — the whole product
+  parse.js             GitHub URL → owner, repo, ref, path, page type, suffixes
+  payload.js           builds what the panel shows (background side)
+  settings.js          defaults, load/save, usage counters
+  api.js               browser/chrome namespace shim
+  content.js           the injected UI (classic script, no imports)
+  content-styles.js    its stylesheet, as a string
+  background.js        messages, opens, menus, omnibox, toolbar icon
+  background.firefox.js 3-line classic loader (see below)
+  options.*            enable, pin, reorder, add your own
+  ui.css               tokens for the options page
+```
+
+### Adding a service
+
+One object in `src/catalog.js`, and it appears everywhere — buttons, panel, context menu, omnibox:
+
+```js
+{
+  id: "example", name: "Example", abbr: "EX", color: "#0ea5e9",
+  category: "ai", kind: "url",
+  blurb: "One line describing what it shows",
+  supports: (ctx) => ctx.isGitHub,
+  url: (ctx) => `https://example.com/${ctx.owner}/${ctx.repo}${ctx.ghSuffix}`,
+}
+```
+
+`kind` is `url` (opens a tab), `command` (copies a shell command) or `link` (a reference site).
+Context fields available to `url`/`command`: `owner`, `repo`, `ref`, `path`, `tail`, `webUrl`,
+`repoUrl`, `ghSuffix` (everything after `owner/repo`), `pathSuffix` (directory/file views only),
+`ingestSuffix` (folder-aware, for GitIngest), `host`, `isGitHub`, `line`.
+
+Parts of GitHub — `/settings/profile`, `/orgs/acme/people`, `/marketplace/...` — are rejected by
+`parse.js` so the UI never turns up on pages that are not repos.
+
+### Scope
+
+SuperRepo is **GitHub-first** by design. Buttons render where the repo page is
+GitHub (or an explicitly granted GitLab host); Bitbucket and Codeberg remain
+reachable through the context menu and omnibox, which need no host permission.
+Broadening host support (Bitbucket/Codeberg) is welcome when a maintainer or
+partner wants it, but it is not on the critical path: the no-backend/least-
+permission posture is a larger part of the product than coverage breadth.
+
+- **Content scripts cannot be ES modules, and dynamic `import()` inside one does not work**
+  (crbug 40186218). So `content.js` imports nothing: it asks the background for the payload over
+  `runtime.sendMessage`, and the background is the only place that owns the catalog.
+- **Dynamic `import()` is also forbidden in a service worker.** Chrome therefore loads
+  `background.js` as a *module* worker (`"type": "module"`). Firefox MV3 runs an event page and will
+  not take `"type": "module"`, so `src/background.firefox.js` is a three-line classic loader that
+  imports the real module. No logic is duplicated.
+- **The UI lives in a shadow root**, so GitHub's stylesheet cannot reach it, and it borrows GitHub's
+  own CSS custom properties so it matches the page theme. Styles are applied through
+  `adoptedStyleSheets`, which the page's CSP does not block.
+- **GitHub's React re-renders the header** and takes our node with it, so a watcher re-mounts and
+  resets the per-shadow-root state — without that reset the panel ends up in a detached shadow root
+  and silently never appears. There is a regression test for exactly this.
+
+---
+
+## Verification
+
+- **The unit suite** covers URL parsing, the payload builder, and every rewrite rule — including
+  blob/tree paths, PRs, SSH remotes, `.git` suffixes, GitLab, GitHub's reserved paths, and garbage
+  input that must be rejected rather than guessed at.
+- **`npm run smoke`** loads the built extension into headless Chromium and asserts: the service
+  worker boots and the background module evaluates, the options page renders the catalog, then on a
+  **real github.com repo page** it asserts the buttons are injected inline in `repo-header-actions`,
+  that the panel lists the expected rows in the right groups, that GitIngest's target is correct, that a file
+  view narrows it to the containing folder, and that the UI re-mounts cleanly when GitHub's React
+  replaces the header. It also fails on any uncaught error in the browser log — that is how the
+  dynamic-import-in-a-worker bug and the detached-panel bug were both caught.
+- **`npx web-ext lint`** on `dist/firefox`: **0 errors, 0 notices**, and warnings only of one
+  kind — `UNSAFE_VAR_ASSIGNMENT`, for every place markup is written as a string. The count moves as
+  the UI does, so check the *kind* rather than the number. Those are the only `innerHTML` uses, and
+  the value is always a lookup in the closed `GLYPHS` table in `src/icons.js` — a name a person can
+  influence is checked against that table by `hasGlyph()` before it gets there. A test asserts
+  every glyph *and* every shipped payload SVG is free of scripts, `href`, `on*=` handlers and
+  `data:` URLs. AMO does not treat warnings as blocking.
+- The one warning that is *not* `innerHTML` is `KEY_FIREFOX_ANDROID_UNSUPPORTED_BY_MIN_VERSION`,
+  which is what pins `strict_min_version` to 142: `data_collection_permissions` was introduced in
+  Firefox for Android 142, so declaring 140 would claim support for a platform that cannot honour
+  it.
+
+Not covered by automation, and worth a manual pass: the context menu's appearance, the omnibox
+suggestion UI, Firefox's background path, and each service's own site accepting the URL we hand it.
+
+---
+
+## Before publishing
+
+1. **Name availability — verified 2026-10-14.** `github.com/ranjithrajv` exists; the repo does not
+   exist yet. On AMO, the slugs `superepo` and `super-repo` both return 404, so neither looks taken.
+   **The Chrome Web Store name still needs a human check** in the dashboard — it has no public API.
+   Neither store lets you change a listing name after publishing, and the AMO add-on ID
+   (`superepo@ranjithraj.dev`) is locked permanently at first publish. npm's `superepo` is taken by
+   an unrelated CLI template tool, which is harmless: this ships as a browser extension, not an npm
+   package.
+2. **"Not affiliated" and privacy — done in the manifest.** The description now ends
+   *Not affiliated with GitHub*, which is what store review expects, since the name and icon reference
+   GitHub and the UI sits inside their page. The full disclaimer is the last section of this file,
+   and the privacy statement lives in [`PRIVACY.md`](PRIVACY.md) — declare **no data collected** in
+   both stores' own data-usage sections rather than spending scarce description characters on it.
+
+**Contributing** — [`CONTRIBUTING.md`](CONTRIBUTING.md) covers adding a service, the four admission
+rules and the checks to run first. To list a tool you maintain, use the *List my service* issue
+template rather than a PR.
+
+---
+
+## Licence and trademarks
+
+**SuperRepo is an independent project. It is not affiliated with, endorsed by, sponsored by, or
+connected to GitHub, Inc.** The name, the icon and the in-page interface reference GitHub only to
+say where the buttons belong; the extension runs alongside GitHub rather than inside it, and it
+holds no GitHub credentials, requests no API tokens, and never calls the GitHub API. Everything it
+does is build a URL and let the browser open it.
+
+"GitHub", the Octocat logo and GitHub's interface are trademarks of GitHub, Inc., used here only to
+identify the site the extension runs on. Every other product name and logo in the catalog —
+GitIngest, DeepWiki, GitDiagram, github.dev, Gitpod, Sourcegraph and the rest — belongs to its own
+owner. Their names appear to identify the destination a button leads to. No service listed here
+has endorsed this extension, and none is responsible for it.
+
+Released under the [MIT Licence](LICENSE).
+
+Nothing is collected, transmitted or shared — see [`PRIVACY.md`](PRIVACY.md) for the full
+statement and for the permissions this extension asks for and why.
