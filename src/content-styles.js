@@ -259,6 +259,26 @@ globalThis.SuperRepoContentStyles = `
   min-height: 0;
 }
 
+/* The way out of the settings view. Pinned to the top of the scroll area, and
+   opaque, because it has to stay reachable no matter how far down the settings
+   list you are — which is the whole reason it is here rather than left to the
+   footer. */
+.set-back {
+  position: sticky;
+  top: -6px;
+  z-index: 1;
+  align-self: flex-start;
+  margin: 0 0 6px;
+  padding: 6px 6px 8px;
+  background: var(--bgColor-default, #fff);
+  color: var(--fgColor-muted, #59636e);
+}
+
+.set-back:hover {
+  color: var(--fgColor-default, #1f2328);
+  background: var(--control-transparent-bgColor-hover, rgba(208, 215, 222, 0.32));
+}
+
 .set-row {
   display: flex;
   align-items: center;

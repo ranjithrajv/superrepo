@@ -514,6 +514,81 @@ try {
           })()`)
           .catch(() => {});
       }
+
+      // ---- 9. getting back out of the settings view -----------------------
+      // The footer control does toggle, but it read "Settings" in both states
+      // and sat below the list, so once you were in there nothing on screen
+      // looked like a way out. Check the way out that is actually on screen.
+      const backOut = await probe
+        .eval(`(async () => {
+          const shadow = document.querySelector("superepo-root")?.shadowRoot;
+          if (!shadow) return { error: "no panel" };
+          if (shadow.querySelector(".panel").hidden) shadow.querySelector("[data-toggle]").click();
+          await new Promise((r) => setTimeout(r, 300));
+
+          // Start from the list regardless of where the last step left it.
+          if (!shadow.querySelector("[data-list]")) {
+            shadow.querySelector("[data-settings]")?.click();
+            await new Promise((r) => setTimeout(r, 300));
+          }
+
+          const enteredFromList = Boolean(shadow.querySelector("[data-list]"));
+          shadow.querySelector("[data-settings]")?.click();
+          await new Promise((r) => setTimeout(r, 300));
+
+          const inSettings = Boolean(shadow.querySelector("[data-settings-view]"));
+          const back = shadow.querySelector("[data-settings-back]");
+          const backText = back?.textContent?.trim() ?? null;
+          // First control in the view: if it is below a long list it is not
+          // reachable without scrolling, which is the failure being guarded.
+          const backIsFirst = shadow.querySelector(".settings-view")?.firstElementChild === back;
+          const footLabelWhileOpen = shadow.querySelector("[data-settings]")?.textContent?.trim() ?? null;
+
+          back?.click();
+          await new Promise((r) => setTimeout(r, 300));
+
+          return {
+            enteredFromList,
+            inSettings,
+            hasBack: Boolean(back),
+            backText,
+            backIsFirst,
+            footLabelWhileOpen,
+            backOnList: Boolean(shadow.querySelector("[data-list]")),
+            stillInSettings: Boolean(shadow.querySelector("[data-settings-view]")),
+            footLabelAfter: shadow.querySelector("[data-settings]")?.textContent?.trim() ?? null,
+          };
+        })()`)
+        .catch((error) => ({ error: String(error) }));
+
+      if (backOut?.error) {
+        failures.push(`settings view back navigation could not be exercised (${backOut.error})`);
+      } else {
+        check(backOut.inSettings, "the settings toggle did not open the settings view");
+        check(backOut.hasBack, "the settings view offers no way back to the services list");
+        check(
+          /back to services/i.test(backOut.backText ?? ""),
+          `the back control does not say where it goes: ${JSON.stringify(backOut.backText)}`,
+        );
+        check(backOut.backIsFirst, "the back control is not the first thing in the settings view");
+        check(
+          backOut.backOnList && !backOut.stillInSettings,
+          "clicking back did not return to the services list",
+        );
+        check(
+          backOut.footLabelAfter === "Settings" && backOut.footLabelWhileOpen === "Done",
+          `the footer toggle does not change label: ${backOut.footLabelWhileOpen} -> ${backOut.footLabelAfter}`,
+        );
+
+        if (
+          backOut.enteredFromList &&
+          backOut.hasBack &&
+          backOut.backOnList &&
+          !backOut.stillInSettings
+        ) {
+          notes.push("the settings view has a way back to the services list");
+        }
+      }
     }
 
     if (probe.pageErrors.length) failures.push(`page errors: ${probe.pageErrors.join("; ")}`);

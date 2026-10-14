@@ -391,7 +391,10 @@
     settings.type = "button";
     settings.className = "linkish";
     settings.dataset.settings = "1";
-    settings.textContent = "Settings";
+    // Says which way the click goes. A control that reads "Settings" while the
+    // settings are already open reads as a second entry point rather than the
+    // way out, which is how this went unnoticed.
+    settings.textContent = state.showingSettings ? "Done" : "Settings";
     settings.setAttribute("aria-expanded", String(state.showingSettings));
     settings.setAttribute("aria-controls", "settings-view");
     foot.append(status, settings);
@@ -417,6 +420,17 @@
     const wrap = document.createElement("div");
     wrap.className = "settings-view";
     wrap.dataset.settingsView = "1";
+
+    // The way back, at the top of the view rather than in the panel footer. The
+    // footer control does toggle, but it is labelled "Settings" in both states
+    // and sits below a list that can scroll, so once you are in here there is
+    // nothing on screen that reads as a way out.
+    const back = document.createElement("button");
+    back.type = "button";
+    back.className = "linkish set-back";
+    back.dataset.settingsBack = "1";
+    back.textContent = "← Back to services";
+    wrap.append(back);
 
     for (const field of INLINE_FIELDS) {
       const row = document.createElement("label");
@@ -595,9 +609,13 @@
       renderList();
     }
 
-    state.shadow
-      ?.querySelector("[data-settings]")
-      ?.setAttribute("aria-expanded", String(state.showingSettings));
+    // The footer is built once and reused, so the toggle's own label is updated
+    // here rather than only when the panel is first created.
+    const toggle = state.shadow?.querySelector("[data-settings]");
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", String(state.showingSettings));
+      toggle.textContent = state.showingSettings ? "Done" : "Settings";
+    }
     // The filter belongs to the list; hidden on the settings view.
     state.shadow
       ?.querySelector("[data-list-head]")
@@ -909,6 +927,13 @@
 
     if (target.closest("[data-settings]")) {
       state.showingSettings = !state.showingSettings;
+      renderView();
+      return;
+    }
+
+    // "Back to services" — the same toggle, reached from inside the view.
+    if (target.closest("[data-settings-back]")) {
+      state.showingSettings = false;
       renderView();
       return;
     }
