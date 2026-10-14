@@ -108,9 +108,14 @@ export async function freePort() {
   });
 }
 
-export async function devtools(port, path, timeoutMs = 20000) {
+export async function devtools(port, path, timeoutMs = 20000, signal) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
+    // Whoever gave up first owns the failure. Without this the poll keeps
+    // running after a race is lost, and its pending sleep holds the event loop
+    // open until the full timeout — so a dead browser still cost 20 seconds to
+    // report, which is the cost this was meant to remove.
+    if (signal?.aborted) return null;
     try {
       const res = await fetch(`http://127.0.0.1:${port}${path}`);
       if (res.ok) return res.json();
@@ -180,6 +185,13 @@ export async function launch({ width = 1280, height = 900 } = {}) {
       "--no-first-run",
       "--no-default-browser-check",
       "--disable-gpu",
+      // /dev/shm is 64MB on a CI runner, which the renderer exceeds and then
+      // dies on, so the debug port never opens. The sandbox is a second way to
+      // die silently there, as a non-interactive user with no kernel namespace
+      // to build one in. Both are only for the runner: a local run keeps its
+      // sandbox, because there the browser is visiting a real page.
+      "--disable-dev-shm-usage",
+      ...(process.env.CI ? ["--no-sandbox"] : []),
       `--window-size=${width},${height}`,
       "about:blank",
     ],
@@ -190,7 +202,44 @@ export async function launch({ width = 1280, height = 900 } = {}) {
     stderr += chunk.toString();
   });
 
-  const { webSocketDebuggerUrl } = await devtools(port, "/json/version");
+  // Report why, not just that. A Chromium that dies during startup is
+  // indistinguishable from one that is merely slow, and the timeout then hides
+  // the only thing that explains it. This is what turned a missing library into
+  // twenty seconds of "DevTools never came up" with nothing to act on.
+  const died = new Promise((_, reject) => {
+    const fail = async (code, signal) => {
+      // stderr is a pipe, so the last of it can land after `exit`. Without this
+      // pause the report says "(nothing on stderr)" for exactly the failures
+      // that have something to say.
+      await sleep(150);
+      reject(
+        new Error(
+          `${BIN} exited (code ${code}, signal ${signal ?? "none"}) before DevTools was ready.\n` +
+            `stderr:\n${stderr.trim() || "(nothing on stderr)"}`,
+        ),
+      );
+    };
+    chrome.once("error", (e) => reject(new Error(`could not run ${BIN}: ${e.message}`)));
+    chrome.once("exit", fail);
+    // A binary that dies instantly — a missing shared library, a bad flag — can
+    // be gone before the listener above is attached, and `exit` does not fire
+    // twice. exitCode is already set by then, so replay the failure by hand.
+    if (chrome.exitCode !== null) fail(chrome.exitCode, chrome.signalCode);
+  });
+
+  let webSocketDebuggerUrl;
+  const giveUp = new AbortController();
+  try {
+    ({ webSocketDebuggerUrl } = await Promise.race([
+      devtools(port, "/json/version", 20000, giveUp.signal),
+      died,
+    ]));
+  } catch (e) {
+    giveUp.abort();
+    chrome.kill();
+    rmSync(profile, { recursive: true, force: true });
+    throw e;
+  }
   const browser = await CDP.connect(webSocketDebuggerUrl);
   id = await extensionId(browser);
 
