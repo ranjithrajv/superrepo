@@ -396,10 +396,11 @@
       <a href="#features">Features</a>
       <a href="#directory">Directory</a>
       <a href="#how">How it works</a>
+      <a href="#install">Install</a>
       <a href="#privacy">Privacy</a>
       <a href="#faq">FAQ</a>
     </div>
-    <a class="cta" href="https://github.com/ranjithrajv/superrepo" rel="noopener">Add to Chrome</a>
+    <a class="cta" href="#install">Install</a>
     <button class="menu-btn" aria-label="Open menu" id="menuBtn">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
@@ -410,6 +411,7 @@
     <a href="#features">Features</a>
     <a href="#directory">Directory</a>
     <a href="#how">How it works</a>
+    <a href="#install">Install</a>
     <a href="#privacy">Privacy</a>
     <a href="#faq">FAQ</a>
   </div>
@@ -425,8 +427,8 @@
           No URL swaps, no account, no backend, nothing collected.
         </p>
         <div class="reveal" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; transition-delay: 240ms">
-          <a class="btn btn-primary" href="https://github.com/ranjithrajv/superrepo" rel="noopener">Add to Chrome · free</a>
-          <a class="btn btn-ghost" href="https://github.com/ranjithrajv/superrepo" rel="noopener">Get for Firefox</a>
+          <a class="btn btn-primary" href="#install">Install · free</a>
+          <a class="btn btn-ghost" href="#directory">Browse the catalog</a>
         </div>
         <div class="reveal" style="transition-delay: 320ms">
           <div class="proof">
@@ -562,7 +564,7 @@
             <span class="num">01</span>
             <div>
               <p class="title">Install the extension</p>
-              <p class="desc">Add to Chrome, Edge, Brave, or Firefox from one source tree, and to Safari through a Mac companion app. One host permission: github.com.</p>
+              <p class="desc">Download the build for your browser from the release page — Chrome, Edge, Brave and Firefox each get their own, and Safari gets a Mac companion app. One host permission: github.com.</p>
             </div>
           </div>
           <div class="step reveal" style="transition-delay:80ms">
@@ -819,14 +821,27 @@
     </section>
 
     <!-- waitlist / install -->
-    <section class="section">
-      <div class="container" style="max-width: 720px; text-align: center">
+    <section class="section" id="install">
+      <div class="container">
         <div class="eyebrow-row" style="justify-content:center;display:flex"><span class="eyebrow">Get started</span></div>
-        <h2 style="margin-left:auto;margin-right:auto">Add SuperRepo to your browser</h2>
-        <p class="lede" style="margin-left:auto;margin-right:auto">Free, open source, MIT licensed. Chrome, Edge, Brave, and Firefox from one source tree; Safari via a Mac app.</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px">
-          <a class="btn btn-primary" href="https://github.com/ranjithrajv/superrepo" rel="noopener">Add to Chrome</a>
-          <a class="btn btn-ghost" href="https://github.com/ranjithrajv/superrepo" rel="noopener">Add to Firefox</a>
+        <h2 style="margin-left:auto;margin-right:auto;text-align:center">Add SuperRepo to your browser</h2>
+        <p class="lede" style="margin-left:auto;margin-right:auto;text-align:center">Free, open source, MIT licensed. Every button below downloads the build for that browser straight from the <a href="https://github.com/ranjithrajv/superrepo/releases/latest" rel="noopener">latest release</a> — no clone, no build step.</p>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Chrome, Edge, Brave</h3>
+            <p>Every Chromium browser loads the same build, so one download covers all of them — plus Arc, Opera and Vivaldi. Unzip it, turn on developer mode, and load the folder unpacked.</p>
+            <a class="btn btn-ghost btn-sm" href="https://github.com/ranjithrajv/superrepo/releases/download/v0.1.0-alpha/superepo-chrome.zip" rel="noopener">Download for Chrome</a>
+          </div>
+          <div class="card">
+            <h3>Firefox</h3>
+            <p>Its own build and its own manifest. Unzip it and load <code>manifest.json</code> as a temporary add-on, so you re-apply it after each browser restart while you are testing.</p>
+            <a class="btn btn-ghost btn-sm" href="https://github.com/ranjithrajv/superrepo/releases/download/v0.1.0-alpha/superepo-firefox.zip" rel="noopener">Download for Firefox</a>
+          </div>
+          <div class="card">
+            <h3>Safari 17+</h3>
+            <p>Ships as a Mac companion app, because Safari will not load an unpacked MV3 extension from a folder. <code>npm run safari</code> turns the same build into an Xcode project you run locally.</p>
+            <a class="btn btn-ghost btn-sm" href="https://github.com/ranjithrajv/superrepo/releases/download/v0.1.0-alpha/superepo-safari.zip" rel="noopener">Download for Safari</a>
+          </div>
         </div>
         <form class="form" id="waitForm" style="margin-left:auto;margin-right:auto;justify-content:center" novalidate>
           <input type="email" id="waitEmail" name="email" placeholder="you@domain.com" autocomplete="email" aria-label="Email for release notes">
