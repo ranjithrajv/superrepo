@@ -41,3 +41,10 @@ jobs:
           files: dist/*.zip
           generate_release_notes: true
           fail_on_unmatched_files: true
+          # Tags are released in the order v0.1.0-alpha, then -beta, then the
+          # bare stable v0.1.0. Only the last is a real release, and GitHub will
+          # not work that out on its own — it published v0.1.0-alpha as "Latest"
+          # until the flag was set by hand. A hyphen after the version is the
+          # semver pre-release marker, so v0.1.0 and v0.1.0 stay stable while
+          # anything with -alpha or -beta in it is flagged.
+          prerelease: ${{ contains(github.ref_name, '-') }}

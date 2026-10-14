@@ -160,6 +160,38 @@ A few constraints are not obvious and will bite otherwise:
   someone already has. The unit tests in `test/pin-mode.test.mjs` cover both paths;
   read them before touching either one.
 
+## Releasing
+
+Releases go out in three stages, and the stage is the whole point of the tag name:
+
+| Tag | Who it is for |
+|---|---|
+| `v0.1.0-alpha` | people already using it; expect things to move |
+| `v0.1.0-beta` | the shape is settled, the details are not |
+| `v0.1.0` | the version you point the store listings at |
+
+Push the tag and the `Release` workflow tests, checks, packages all four browser
+builds and publishes them as release assets. Nothing else is required:
+
+```bash
+git tag -a v0.1.0-beta -m "v0.1.0-beta" && git push origin v0.1.0-beta
+```
+
+Anything with a hyphen after the version is flagged as a pre-release, so
+`alpha` and `beta` never show up as "Latest"; the bare `v0.1.0` is the only one
+that does.
+
+Two things follow from that, and both have bitten this project already:
+
+**The site's download buttons name a tag.** `docs/index.html` links straight to
+`/releases/download/<tag>/superepo-<browser>.zip`, so each stage needs those
+links moved to the new tag. There is no rolling URL that works here: GitHub's
+`/releases/latest/` skips pre-releases, so it 404s for as long as the newest
+release is an alpha or a beta.
+
+**A stable tag is not a dry run.** Pushing `v0.1.0` publishes it immediately, as
+the current release, to anyone watching the repo. Decide the tag deliberately.
+
 ## Licence
 
 MIT. Contributors keep copyright on their work.
