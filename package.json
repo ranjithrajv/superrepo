@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Turn every repo into a SuperRepo — that gives you a prompt, a diagram, a wiki, an IDE and a podcast and a lot more.",
+  "description": "Turn every repo into a SuperRepo \u2014 that gives you a prompt, a diagram, a wiki, an IDE and a podcast and a lot more.",
   "license": "MIT",
   "scripts": {
     "setup": "node scripts/setup.mjs",
@@ -17,6 +17,7 @@
     "package": "node scripts/build.mjs --zip",
     "smoke": "node scripts/smoke.mjs",
     "shots": "node scripts/screenshots.mjs",
-    "preview": "node scripts/preview.mjs"
+    "preview": "node scripts/preview.mjs",
+    "safari": "node scripts/convert-safari.mjs"
   }
 }

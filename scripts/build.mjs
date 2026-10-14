@@ -18,6 +18,8 @@ const zip = process.argv.includes("--zip");
 
 const TARGETS = [
   { name: "chrome", manifest: "manifest.chrome.json" },
+  { name: "edge", manifest: "manifest.edge.json" },
+  { name: "safari", manifest: "manifest.safari.json" },
   { name: "firefox", manifest: "manifest.firefox.json" },
 ];
 
@@ -61,7 +63,7 @@ for (const target of TARGETS) {
 }
 
 console.log("\nLoad it:");
-console.log("  Chrome/Edge/Brave   chrome://extensions → Developer mode → Load unpacked → dist/chrome");
+console.log("  Chrome/Edge/Brave   chrome://extensions / edge://extensions → Load unpacked → dist/chrome (or dist/edge, dist/safari)");
 console.log("  Firefox             about:debugging#/runtime/this-firefox → Load Temporary Add-on → dist/firefox/manifest.json");
 
 function count(dir) {

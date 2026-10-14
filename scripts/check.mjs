@@ -19,7 +19,7 @@ const notes = [];
 
 // ------------------------------------------------------------------ manifests
 
-const MANIFESTS = ["manifest.chrome.json", "manifest.firefox.json"];
+const MANIFESTS = ["manifest.chrome.json", "manifest.edge.json", "manifest.safari.json", "manifest.firefox.json"];
 
 for (const name of MANIFESTS) {
   const path = join(root, name);

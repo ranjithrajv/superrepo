@@ -9,7 +9,7 @@ diagram. `gitpod.io/#` in front gives you a dev environment. So this extension i
 rewrites, with buttons injected into the page itself — **no backend, no API keys, no network calls
 of its own.**
 
-The catalog keeps growing. Loads in **Chrome, Edge, Brave and Firefox** from one source tree.
+The catalog keeps growing. Loads in **Chrome, Edge, Brave and Firefox** from one source tree; Safari ships as a Mac companion app (see [SAFARI.md](SAFARI.md)).
 
 ---
 
