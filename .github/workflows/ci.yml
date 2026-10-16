@@ -31,9 +31,10 @@ jobs:
       - name: Manifest, catalog-drift and permission check
         run: npm run check
 
-      - name: Catalog reachability (probe)
-        run: npm run probe
-
+      # The catalog probe is deliberately not in this job. It reaches a few
+      # dozen third-party hosts, so a site having a slow afternoon turned main
+      # red for reasons that had nothing to do with this repository. It runs
+      # weekly in probe.yml, where a dead service is the point rather than noise.
       - name: Build
         run: npm run build
 

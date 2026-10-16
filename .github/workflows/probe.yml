@@ -4,8 +4,14 @@ name: Catalog probe
 # is the record of what happens when nobody checks. This runs it on a schedule
 # rather than on a push, because the thing it watches decays on its own clock.
 #
-# A failure here means a service in the catalog is unreachable — not that this
-# repository is broken.
+# This is also the only place it runs. The push gate used to run it as well,
+# which meant a service having a slow afternoon could turn main red for a reason
+# that had nothing to do with this repository.
+#
+# A failure here means a service in the catalog is unreachable, not that anything
+# is wrong with the extension. Whatever the outcome, the refreshed report and the
+# regenerated docs/CATALOG.md are committed, so the "last probed" date the page
+# publishes cannot quietly stop moving.
 
 on:
   schedule:
@@ -23,6 +29,9 @@ concurrency:
   group: probe
   cancel-in-progress: false
 
+permissions:
+  contents: write
+
 jobs:
   probe:
     name: Probe every service
@@ -34,16 +43,30 @@ jobs:
         with:
           node-version: 22
 
+      # The exit code is the signal here, not a reason to skip the report: the
+      # run that matters most is the one that found something dead. The table it
+      # prints to stdout is the human-readable half.
       - name: Probe
+        id: probe
+        continue-on-error: true
         run: node scripts/probe.mjs --out probe-report.json ${{ inputs.strict && '--strict' || '' }}
 
-      - name: Show the table
-        if: always()
-        run: node scripts/probe.mjs || true
+      - name: Regenerate the published catalog
+        run: npm run catalog
 
-      - uses: actions/upload-artifact@v4
+      - name: Publish the refreshed report
         if: always()
-        with:
-          name: probe-report
-          path: probe-report.json
-          retention-days: 30
+        run: |
+          if git diff --quiet -- probe-report.json docs/CATALOG.md; then
+            echo "Report unchanged."
+            exit 0
+          fi
+          git config user.name "Ranjith Raj"
+          git config user.email "ranjithraj@riseup.net"
+          git add probe-report.json docs/CATALOG.md
+          git commit -m "Refresh the catalog probe report"
+          git push
+
+      - name: Fail if a service is unreachable
+        if: steps.probe.outcome == 'failure'
+        run: exit 1
