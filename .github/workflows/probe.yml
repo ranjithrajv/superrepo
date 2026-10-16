@@ -54,17 +54,19 @@ jobs:
       - name: Regenerate the published catalog
         run: npm run catalog
 
-      - name: Publish the refreshed report
+      - name: Publish the refreshed catalog
         if: always()
+        # probe-report.json is gitignored scratch; docs/CATALOG.md is the published
+        # half, carrying the date and each service's probe state.
         run: |
-          if git diff --quiet -- probe-report.json docs/CATALOG.md; then
-            echo "Report unchanged."
+          if git diff --quiet -- docs/CATALOG.md; then
+            echo "Catalog unchanged."
             exit 0
           fi
           git config user.name "Ranjith Raj"
           git config user.email "ranjithraj@riseup.net"
-          git add probe-report.json docs/CATALOG.md
-          git commit -m "Refresh the catalog probe report"
+          git add docs/CATALOG.md
+          git commit -m "Refresh the catalog probe status"
           git push
 
       - name: Fail if a service is unreachable
