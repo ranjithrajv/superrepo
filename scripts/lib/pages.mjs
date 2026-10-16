@@ -24,9 +24,15 @@ export function repoParts(repo) {
   return { owner, name };
 }
 
+/** The mark, inline so the mock pages need no extra request and no icon build. */
+const FAVICON =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E" +
+  "%3Crect width='32' height='32' rx='8' fill='%235b6cff'/%3E%3Ctext x='16' y='22' " +
+  "font-family='system-ui' font-size='18' font-weight='700' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E";
+
 /** The shared chrome: same tokens, same dark dev bar, light/dark aware. */
 export const shell = (title, body, extraHead = "") => `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title}</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="${FAVICON}"><title>${title}</title>
 <style>
   :root { color-scheme: light dark; --border: #d1d9e0; --muted: #59636e; --bg: #fbfbfc; --fg: #1f2328; --surface: #fff; }
   @media (prefers-color-scheme: dark) {
