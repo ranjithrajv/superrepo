@@ -8,7 +8,7 @@
   "scripts": {
     "setup": "node scripts/setup.mjs",
     "icons": "node scripts/make-icons.mjs",
-    "check": "node scripts/gen-partners.mjs --check && node scripts/gen-catalog-page.mjs --check && node scripts/check.mjs",
+    "check": "node scripts/gen-partners.mjs --check && node scripts/gen-catalog-page.mjs --check && node scripts/build-demo.mjs --check && node scripts/check.mjs",
     "catalog": "node scripts/gen-catalog-page.mjs",
     "probe": "node scripts/probe.mjs",
     "partners": "node scripts/gen-partners.mjs",
@@ -17,7 +17,9 @@
     "package": "node scripts/build.mjs --zip",
     "smoke": "node scripts/smoke.mjs",
     "shots": "node scripts/screenshots.mjs",
+    "og": "node scripts/og-image.mjs",
     "preview": "node scripts/preview.mjs",
+    "demo": "node scripts/build-demo.mjs",
     "safari": "node scripts/convert-safari.mjs"
   }
 }

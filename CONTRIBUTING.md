@@ -58,14 +58,19 @@ After editing the catalog:
 ```bash
 npm run partners   # regenerates the service table in PARTNERS.md
 npm run catalog    # regenerates docs/CATALOG.md
-npm run check      # fails if either generated file is now out of date
+npm run demo       # regenerates the hosted demo under site/demo/
+npm run check      # fails if any generated file is now out of date
 ```
 
 Both generated files are checked in, so treat them as build artifacts rather than
 something to hand-edit: change `src/catalog.js` and let the generators do the rest.
-The same rule applies to the marketing site's directory section, which is produced
-from the catalog by `scripts/gen-treemap.mjs` — though that page is not part of the
-extension build, so re-running the generator there is optional.
+
+The marketing site lives in `site/`: hand-written `index.html`, `site.css`,
+`site.js` and `directory.js`, plus the hosted demo under `site/demo/`. It is
+published by `.github/workflows/pages.yml` — GitHub Pages serves a branch folder
+only from `/` or `/docs`, and the site is neither, so it goes out through Actions.
+One file there is *not* generated: `site/directory.js` embeds its own copy of the
+catalog for the treemap, so a catalog change has to be mirrored there by hand.
 
 ## What we ask of a service
 
@@ -183,7 +188,7 @@ that does.
 
 Two things follow from that, and both have bitten this project already:
 
-**The site's download buttons name a tag.** `docs/index.html` links straight to
+**The site's download buttons name a tag.** `site/index.html` links straight to
 `/releases/download/<tag>/superepo-<browser>.zip`, so each stage needs those
 links moved to the new tag. There is no rolling URL that works here: GitHub's
 `/releases/latest/` skips pre-releases, so it 404s for as long as the newest

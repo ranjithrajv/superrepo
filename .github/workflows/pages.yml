@@ -1,0 +1,44 @@
+name: Pages
+
+# GitHub Pages can only publish `/` or `/docs` from a branch, and the marketing
+# site lives in `site/`. So it is published through Actions instead: that folder
+# is uploaded as-is and served directly, with no Jekyll pass over it.
+#
+# The demo under `site/demo/` is committed, not built here — `npm run check`
+# (CI) already fails if it has drifted from `src/`.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+# One deployment at a time, and never cancel one that is already publishing.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    name: Publish site/
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: publish
+        uses: actions/deploy-pages@v4

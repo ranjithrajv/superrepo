@@ -12,6 +12,14 @@
   /** The repo the preview pretends you are looking at. */
   const simulated = PARAM.get("u") || "https://github.com/octocat/hello-world";
 
+  // Where the real modules and the options page live. The defaults suit
+  // `npm run preview` (shim in /scripts, modules in /src). The hosted demo sets
+  // these before loading the shim, because it is served from a subdirectory and
+  // the shim lives beside the modules there. See site/demo and lib/pages.mjs.
+  const moduleBase = new URL(globalThis.__SUPERREPO_MODULE_BASE__ || "/src/", document.baseURI);
+  const optionsUrl = new URL(globalThis.__SUPERREPO_OPTIONS_URL__ || "/src/options.html", document.baseURI).href;
+  const mod = (name) => new URL(name, moduleBase).href;
+
   const read = (key) => {
     try {
       const raw = localStorage.getItem(`preview:${key}`);
@@ -44,10 +52,10 @@
   let modules = null;
   const load = () =>
     (modules ??= Promise.all([
-      import("/src/parse.js"),
-      import("/src/payload.js"),
-      import("/src/settings.js"),
-      import("/src/catalog.js"),
+      import(mod("parse.js")),
+      import(mod("payload.js")),
+      import(mod("settings.js")),
+      import(mod("catalog.js")),
     ]).then(([parse, payload, settings, catalog]) => ({ parse, payload, settings, catalog })));
 
   const reply = (value) => Promise.resolve(value);
@@ -56,9 +64,9 @@
     storage,
     runtime: {
       id: "preview",
-      getURL: (path) => `/${String(path).replace(/^\/+/, "")}`,
+      getURL: (path) => new URL(String(path).replace(/^\/+/, ""), moduleBase).href,
       getManifest: () => ({ version: "0.1.0-preview" }),
-      openOptionsPage: () => window.open("/src/options.html", "_blank", "noopener"),
+      openOptionsPage: () => window.open(optionsUrl, "_blank", "noopener"),
       lastError: null,
       onMessage: { addListener() {} },
       sendMessage: async (message) => {

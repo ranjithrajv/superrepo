@@ -17,6 +17,7 @@ import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { dirname, extname, join, normalize, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { DEFAULT_REPO, PRESETS, esc, shell, mockGitHubHtml } from "./lib/pages.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const shim = await readFile(join(root, "scripts/preview-shim.js"), "utf8");
@@ -31,8 +32,6 @@ const TYPES = {
   ".svg": "image/svg+xml",
   ".png": "image/png",
 };
-
-const DEFAULT_REPO = "https://github.com/octocat/hello-world";
 
 const server = createServer(async (request, response) => {
   const url = new URL(request.url, `http://127.0.0.1:${port}`);
@@ -77,30 +76,8 @@ const server = createServer(async (request, response) => {
   }
 });
 
-/** Shared chrome for the dev pages. */
-const shell = (title, body, extraHead = "") => `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>${title}</title>
-<style>
-  :root { color-scheme: light dark; --border: #d1d9e0; --muted: #59636e; --bg: #fbfbfc; --fg: #1f2328; --surface: #fff; }
-  @media (prefers-color-scheme: dark) {
-    :root { --border: #3d444d; --muted: #9198a1; --bg: #0d1117; --fg: #f0f6fc; --surface: #151b23; }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; font: 14px -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--fg); }
-  .devbar { display: flex; gap: 8px; align-items: center; padding: 10px 16px; background: #1f2328; color: #fff; font-size: 12px; }
-  .devbar input { flex: 1; max-width: 620px; padding: 5px 8px; border-radius: 6px; border: 1px solid #444c56; background: #0d1117; color: #f0f6fc; font: inherit; }
-  .devbar button { padding: 5px 12px; border: 0; border-radius: 6px; background: #5b6cff; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
-  .devbar span { color: #9198a1; }
-</style>${extraHead}</head><body>${body}</body></html>`;
-
 function indexHtml(repo) {
-  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  const presets = [
-    ["Repo root", "https://github.com/octocat/hello-world"],
-    ["File in a folder", "https://github.com/coderamp-labs/gitingest/blob/main/src/gitingest/utils"],
-    ["GitLab", "https://gitlab.com/group/project"],
-    ["Not a repo", "https://github.com/settings/profile"],
-  ];
+  const presets = PRESETS;
   return shell(
     "SuperRepo — live preview",
     `<div class="devbar">
@@ -195,55 +172,6 @@ function glyphSheetHtml() {
                   color: color-mix(in srgb, var(--c) 80%, var(--fg)); }
       .gp-glyph svg { display: block; }
     </style>`,
-  );
-}
-
-/** A GitHub-shaped page so the injected UI lands where it would in reality. */
-function mockGitHubHtml(repo) {
-  const parsed = new URL(repo.includes("://") ? repo : `https://github.com/${repo}`);
-  const [, owner = "octocat", name = "hello-world"] = parsed.pathname.split("/");
-  return shell(
-    `${owner}/${name} · SuperRepo preview`,
-    `<div class="devbar">
-      <strong>mock github.com</strong>
-      <span>the buttons below are injected by src/content.js — open <strong>More</strong></span>
-    </div>
-
-    <header style="background:var(--surface);border-bottom:1px solid var(--border)">
-      <div style="max-width:1180px;margin:0 auto;padding:16px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-          <span style="color:var(--muted)">${owner}</span>
-          <span style="color:var(--muted)">/</span>
-          <strong style="font-size:20px">${name}</strong>
-          <span style="border:1px solid var(--border);border-radius:999px;padding:1px 8px;font-size:12px;color:var(--muted)">Public</span>
-        </div>
-
-        <ul data-testid="repo-header-actions" style="display:flex;align-items:center;gap:8px;list-style:none;margin:0;padding:0">
-          <li><button style="font:600 12px/20px inherit;padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--fg)">Notifications</button></li>
-          <li><button style="font:600 12px/20px inherit;padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--fg)">Fork 7.1k</button></li>
-          <li><button style="font:600 12px/20px inherit;padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--fg)">Star 3.8k</button></li>
-        </ul>
-
-        <nav style="display:flex;gap:18px;margin-top:16px;border-bottom:1px solid var(--border);padding-bottom:8px;font-size:13px;color:var(--muted)">
-          <span style="font-weight:600;color:var(--fg);border-bottom:2px solid #fd8c73;padding-bottom:8px">Code</span>
-          <span>Issues</span><span>Pull requests</span><span>Actions</span><span>Projects</span><span>Wiki</span><span>Security and quality</span><span>Insights</span>
-        </nav>
-      </div>
-    </header>
-
-    <main style="max-width:1180px;margin:0 auto;padding:20px">
-      <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface)">
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border);color:var(--muted);font-size:13px">
-          This page exists so the injected UI can be seen in context. Nothing here is GitHub.
-        </div>
-        <div style="padding:10px 16px;font-size:13px;color:var(--muted)">README.md · update line at end of file</div>
-        <div style="padding:10px 16px;font-size:13px;color:var(--muted)">hello-world.txt · first commit</div>
-      </div>
-    </main>
-
-    <script src="/scripts/preview-shim.js"></script>
-    <script src="/src/content-styles.js"></script>
-    <script src="/src/content.js"></script>`,
   );
 }
 

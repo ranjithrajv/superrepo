@@ -169,8 +169,9 @@ export async function openTab(port, browser, url) {
   return client;
 }
 
-/** Boot headless Chromium with the built extension loaded. */
-export async function launch({ width = 1280, height = 900 } = {}) {
+/** Boot headless Chromium. Loads the built extension unless `extension: false`,
+ *  which is what the site-only captures want — they need no build first. */
+export async function launch({ width = 1280, height = 900, extension = true } = {}) {
   let id = null;
   const port = await freePort();
   const profile = mkdtempSync(join(tmpdir(), "superepo-smoke-"));
@@ -180,8 +181,7 @@ export async function launch({ width = 1280, height = 900 } = {}) {
       "--headless=new",
       `--remote-debugging-port=${port}`,
       `--user-data-dir=${profile}`,
-      `--disable-extensions-except=${dist}`,
-      `--load-extension=${dist}`,
+      ...(extension ? [`--disable-extensions-except=${dist}`, `--load-extension=${dist}`] : []),
       "--no-first-run",
       "--no-default-browser-check",
       "--disable-gpu",
@@ -241,7 +241,7 @@ export async function launch({ width = 1280, height = 900 } = {}) {
     throw e;
   }
   const browser = await CDP.connect(webSocketDebuggerUrl);
-  id = await extensionId(browser);
+  id = extension ? await extensionId(browser) : null;
 
   return {
     chrome,
