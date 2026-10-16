@@ -4,6 +4,7 @@
  *   1. both manifests parse and reference files that exist
  *   2. every JS file parses
  *   3. the icons exist
+ *   4. the Edge listing logo is there, 1:1 and 24-bit RGB
  *
  * Run with `npm run check`.
  */
@@ -12,6 +13,8 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { describePng } from "./lib/png.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const problems = [];
@@ -114,6 +117,76 @@ notes.push(`${jsFiles.length} JS files parsed`);
 for (const size of [16, 32, 48, 96, 128]) {
   const icon = join(root, "icons", `icon${size}.png`);
   if (!existsSync(icon)) problems.push(`icons/icon${size}.png missing — run \`npm run icons\``);
+}
+
+// --------------------------------------------------------------- store logo
+
+/**
+ * Edge asks every listing for a 1:1 logo — 300x300 recommended, 128x128 the
+ * minimum — and it is the one store image that cannot be derived from the
+ * manifest, so it lives in store/ where it is easy to leave behind. `npm run
+ * shots` checks it at capture time; this checks the file that is actually
+ * committed, for everyone who never runs that.
+ */
+{
+  const logo = join(root, "store", "logo.png");
+  if (!existsSync(logo)) {
+    problems.push("store/logo.png missing — Edge wants a 1:1 listing logo, 300x300 recommended");
+  } else {
+    try {
+      const size = describePng(readFileSync(logo));
+      if (size.width !== 300 || size.height !== 300) {
+        problems.push(`store/logo.png: ${size.width}x${size.height}, but the listing pack is cut at 300x300`);
+      }
+      if (size.colorType !== 2 || size.depth !== 8) {
+        problems.push(`store/logo.png: not 24-bit RGB (colour type ${size.colorType}, depth ${size.depth})`);
+      }
+      notes.push(`store/logo.png ${size.width}x${size.height}, 24-bit RGB`);
+    } catch (error) {
+      problems.push(`store/logo.png: ${error.message}`);
+    }
+  }
+}
+
+// ------------------------------------------------- store privacy fields
+
+/**
+ * The Chrome dashboard will not publish until every declared permission has a
+ * justification, and it names them itself — a permission added to the manifest
+ * with no matching field in PRIVACY-PRACTICES.md is a submission that stalls
+ * halfway through, weeks after the change that caused it. So the store pack is
+ * checked against the manifest the same way PARTNERS.md is checked against the
+ * catalog.
+ */
+{
+  const packPath = join(root, "store", "PRIVACY-PRACTICES.md");
+  const manifest = JSON.parse(readFileSync(join(root, "manifest.chrome.json"), "utf8"));
+
+  if (!existsSync(packPath)) {
+    problems.push("store/PRIVACY-PRACTICES.md missing — the Chrome privacy fields have nowhere to live");
+  } else {
+    const pack = readFileSync(packPath, "utf8");
+
+    // Content-script matches are host permissions as far as the dashboard is
+    // concerned, and it asks about them separately from `permissions`.
+    const declared = [
+      ...(manifest.permissions ?? []),
+      ...new Set((manifest.content_scripts ?? []).flatMap((entry) => entry.matches ?? [])),
+      ...(manifest.optional_host_permissions ?? []),
+    ];
+
+    for (const entry of declared) {
+      // Each field names its permission in backticks, exactly as declared.
+      if (!pack.includes(`\`${entry}\``)) {
+        problems.push(`PRIVACY-PRACTICES.md has no field for ${entry}, which manifest.chrome.json declares`);
+      }
+    }
+    for (const field of ["Single purpose description", "Remote code"]) {
+      if (!pack.includes(field)) problems.push(`PRIVACY-PRACTICES.md is missing the ${field} field`);
+    }
+
+    notes.push(`${declared.length} declared permissions each have a privacy field`);
+  }
 }
 
 // -------------------------------------------------------------------- report

@@ -1,7 +1,7 @@
 # Store listing copy
 
-Everything both stores ask for, ready to paste. Field limits are noted so you can
-check rather than guess.
+Everything the stores ask for, ready to paste. Field limits are noted so you can
+check rather than guess. Live submission state is in [`SUBMIT.md`](SUBMIT.md).
 
 ## Shared metadata
 
@@ -42,7 +42,7 @@ rewrite.
 SuperRepo puts those buttons on the repo page itself, right after Watch / Fork /
 Star.
 
-**26 tools, one click each**
+**Every tool, one click each**
 
 - **Feed it to an AI** — GitIngest, UIthub, DeepWiki, GitMCP, GitHub.gg, GitSummarize, GitReverse
 - **Diagrams & structure** — GitDiagram, code2flow
@@ -77,6 +77,11 @@ backend and no network call of its own — the extension builds a URL and lets y
 browser open it. Nothing is collected, transmitted or shared. GitLab is available
 if you want it, but only when you turn it on yourself.
 
+**Runs where you do** — Chrome, Edge, Brave and Firefox on desktop; Firefox for
+Android and Edge for Android on a phone; Safari on macOS and iOS. That is every
+browser that supports extensions: essentially all desktop usage, and all of mobile
+where an extension can run at all.
+
 Not affiliated with, endorsed by or connected to GitHub. All trademarks belong to
 their owners.
 
@@ -98,6 +103,11 @@ Both stores ask the same questions in different words. The honest answers, match
 | Why host access? | The buttons have to render inside the page. No other reason |
 | Remote code? | None. No remotely hosted code, no eval of remote scripts |
 
+That table is the short version. The Chrome dashboard wants prose in a field per
+permission, and **`PRIVACY-PRACTICES.md` is the text to paste for each of them** —
+single purpose, one justification per permission, the remote-code declaration and
+the data-usage certification, in the order the tab asks for them.
+
 If a reviewer asks why `scripting` is present, the answer is in the manifest itself:
 it has no effect without a host permission the user has to grant by hand.
 
@@ -117,17 +127,58 @@ AMO does not use keywords — the name, summary and categories carry it.
 
 ---
 
+## The screenshots
+
+Five, in the order the stores show them, all 1280×800. Chrome downscales them to
+640×400, so the order matters: the first one is the one most people see.
+
+| File | What it shows |
+|---|---|
+| `screenshot-1-buttons.png` | The header buttons on a repo, in the row with Watch / Fork / Star |
+| `screenshot-2-panel.png` | The **More** panel: the whole catalog, grouped, one line per service |
+| `screenshot-3-file.png` | The panel on a file view, where rows say "this file" because of where the page is |
+| `screenshot-4-search.png` | The panel filtered — how you find one service among all of them |
+| `screenshot-5-options.png` | The settings page, advanced section open |
+
+Screenshots 1, 2 and 4 were captured with **Buttons show → Icon and name** set.
+The shipped default is icon-only, and eight 32px glyphs are unreadable once the
+store has downscaled the image — the labels say what each button does at a
+glance. It is a real setting, saved through the options page before the capture,
+so nothing is staged; screenshot 3 shows the same buttons on a file view.
+
 ## Sizing rules that get listings rejected
 
-Both of these have bitten other extensions and both are already satisfied by what
-`npm run shots` produces:
+All of these have bitten other extensions and all of them are already satisfied
+by what `npm run shots` produces:
 
 | Asset | Required size | In `store/` |
 |---|---|---|
+| Edge extension logo | 1:1 — 300×300 recommended, 128×128 minimum | `logo.png` |
 | Small promo tile | exactly 440×280 | `promo-small.png` |
-| Large promo tile | exactly 920×680 | `promo-large.png` |
-| Chrome screenshots | 1280×800 (or 640×400) | `screenshot-1..3` |
-| AMO screenshot | 1366×768 recommended | `screenshot-4-promo.png` |
+| Marquee promo tile | exactly 1400×560 | `promo-marquee.png` |
+| Chrome screenshots | 1280×800 (or 640×400), up to 5 | `screenshot-1..5` |
+| AMO screenshots | 1280×800 recommended, so the same five | `screenshot-1..5` |
+
+The Edge logo is the one listing image no store works out for itself: Edge asks
+for a square logo per language and reads nothing from the manifest, where Chrome
+takes its 128px icon and asks for no logo. So `logo.png` is the icon full bleed —
+the icon's own 23% corner radius comes off in the render, because rounding
+dropped onto a no-alpha PNG turns into white corners, and white corners read
+wrong on any frame that is not white.
+
+The two promo tiles are the only Chrome promotional sizes currently listed. A
+920×680 "large tile" is in older guides and in this repo's history; it is not a
+size the Web Store accepts any more, and the marquee replaced it.
+
+The AMO shot used to be the promo tile re-rendered at 1366×768. A tile is not a
+screenshot, and AMO now recommends the same 1280×800 the Web Store wants, so both
+listings use the one set.
 
 Promo tiles are captured at 1× on purpose. A retina-scaled capture is twice the
 size it looks like it is and gets rejected.
+
+The other half of the Chrome rule is the format: **JPEG or 24-bit PNG, no alpha**.
+A 32-bit RGBA file is refused even when every pixel in it is opaque. Every file
+here is 8-bit RGB (PNG colour type 2), and `npm run shots` checks that — along
+with the exact pixel size — on each capture, so a file the store would reject
+fails the run instead of the upload.
