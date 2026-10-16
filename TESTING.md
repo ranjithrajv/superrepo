@@ -58,7 +58,7 @@ Open `https://github.com/octocat/hello-world`.
 | 7 | Click **GitIngest** | gitingest.com opens for that repo, in a new tab |
 | 8 | ⌘/Ctrl-click a row | Opens in a background tab, panel stays open |
 | 9 | Open `…/octocat/hello-world/blob/master/README` and hover GitIngest | Target is `…/tree/master` — a file view narrows to its folder |
-| 10 | Open `https://gitlab.com/group/project` | Floating cluster bottom-right, and the panel lists **5** services, not 26 — but only after granting GitLab below |
+| 10 | Open `https://gitlab.com/group/project` | Floating cluster bottom-right, and the panel lists only the services that can take a GitLab repo, not the GitHub-only ones — but only after granting GitLab below |
 | 10a | Options → *Other sites* → **Enable** on gitlab.com, then reload a GitLab repo page | Chrome asks once; buttons and the panel appear there |
 | 10b | …→ **Remove access**, then reload | Buttons stop appearing on GitLab; the right-click menu still works |
 | 11 | Open `https://github.com/settings/profile` | **Nothing** is injected — reserved path, not a repo |

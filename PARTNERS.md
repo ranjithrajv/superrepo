@@ -124,7 +124,7 @@ Maintained tools: [add yours in one issue](https://github.com/ranjithrajv/superr
 Three sentences, if that's all you want:
 
 > SuperRepo puts a button on every GitHub repo that turns it into a prompt, a
-> diagram, a wiki, an IDE or a podcast. It lists dozens of tools — including ours —
+> diagram, a wiki, an IDE or a podcast. It lists a whole catalog of tools — including ours —
 > and every one is a row in an open catalog that anyone can add to. If you maintain
 > one of those tools, listing it is one issue:
 > `github.com/ranjithrajv/superrepo`
