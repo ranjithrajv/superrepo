@@ -58,19 +58,20 @@ After editing the catalog:
 ```bash
 npm run partners   # regenerates the service table in PARTNERS.md
 npm run catalog    # regenerates docs/CATALOG.md
+npm run treemap    # regenerates the catalog tables in site/directory.js
 npm run demo       # regenerates the hosted demo under site/demo/
 npm run check      # fails if any generated file is now out of date
 ```
 
-Both generated files are checked in, so treat them as build artifacts rather than
+The generated files are checked in, so treat them as build artifacts rather than
 something to hand-edit: change `src/catalog.js` and let the generators do the rest.
 
-The marketing site lives in `site/`: hand-written `index.html`, `site.css`,
-`site.js` and `directory.js`, plus the hosted demo under `site/demo/`. It is
-published by `.github/workflows/pages.yml` — GitHub Pages serves a branch folder
-only from `/` or `/docs`, and the site is neither, so it goes out through Actions.
-One file there is *not* generated: `site/directory.js` embeds its own copy of the
-catalog for the treemap, so a catalog change has to be mirrored there by hand.
+The marketing site lives in `site/`: hand-written `index.html`, `site.css` and
+`site.js`, plus the hosted demo under `site/demo/`. It is published by
+`.github/workflows/pages.yml` — GitHub Pages serves a branch folder only from `/`
+or `/docs`, and the site is neither, so it goes out through Actions. The one file
+there that is generated rather than written is `site/directory.js`, whose three
+catalog tables come from `npm run treemap`.
 
 ## What we ask of a service
 

@@ -199,11 +199,16 @@ npm run package      # the above plus uploadable .zip files
 npm run smoke        # load it in headless Chromium and assert behaviour on a real GitHub page
 npm run preview      # mock GitHub page + options page, no install needed
 npm run demo         # regenerate site/demo/ — the hosted no-install demo
+npm run treemap      # regenerate the catalog tables embedded in site/directory.js
 ```
 
 `site/demo/` is generated from `src/` and the shared templates in `scripts/lib/pages.mjs`, so it is
 never hand-edited. It is checked in, and `npm run check` fails if it has drifted — run `npm run demo`
 after any change under `src/`. `npm run preview` serves the same page locally.
+
+The site's directory treemap embeds the catalog rather than fetching it, so `npm run treemap` rewrites
+that block from `src/catalog.js`, and `npm run check` fails if it has drifted. Catalog edits want
+`npm run catalog`, `npm run partners` and `npm run treemap`.
 
 ```
 src/
