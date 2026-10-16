@@ -8,8 +8,9 @@
   "scripts": {
     "setup": "node scripts/setup.mjs",
     "icons": "node scripts/make-icons.mjs",
-    "check": "node scripts/gen-partners.mjs --check && node scripts/gen-catalog-page.mjs --check && node scripts/build-demo.mjs --check && node scripts/check.mjs",
+    "check": "node scripts/gen-partners.mjs --check && node scripts/gen-catalog-page.mjs --check && node scripts/gen-treemap.mjs --check && node scripts/build-demo.mjs --check && node scripts/check.mjs",
     "catalog": "node scripts/gen-catalog-page.mjs",
+    "treemap": "node scripts/gen-treemap.mjs",
     "probe": "node scripts/probe.mjs",
     "partners": "node scripts/gen-partners.mjs",
     "test": "node --test test/*.test.mjs",
