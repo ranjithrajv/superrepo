@@ -19,20 +19,12 @@
  *     loaded the injection checks are skipped and reported rather than failing.
  */
 
-import { rmSync } from "node:fs";
 
 import { parseRepoUrl } from "../src/parse.js";
 import { buildPayload } from "../src/payload.js";
 import { DEFAULT_SETTINGS } from "../src/settings.js";
 
-import {
-  assertRunnable,
-  attachServiceWorker,
-  extensionId,
-  launch,
-  openTab,
-  waitFor,
-} from "./lib/cdp.mjs";
+import { assertRunnable, attachServiceWorker, extensionId, launch, openTab, removeProfile, waitFor } from "./lib/cdp.mjs";
 
 const REPO = "https://github.com/octocat/hello-world";
 const NESTED = "https://github.com/coderamp-labs/gitingest/blob/main/src/gitingest/utils";
@@ -603,7 +595,7 @@ try {
   if (browser) browser.close();
   launched?.chrome?.kill("SIGKILL");
   await sleep(300);
-  rmSync(launched?.profilePath ?? "", { recursive: true, force: true });
+  removeProfile(launched?.profilePath);
 }
 
 // ---------------------------------------------------------------------- report

@@ -24,6 +24,24 @@ export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const CANDIDATES = [process.env.CHROME, "chromium", "chromium-browser", "google-chrome-stable", "google-chrome"].filter(Boolean);
 export const BIN = CANDIDATES.find((bin) => spawnSync("sh", ["-c", `command -v ${bin}`], { stdio: "ignore" }).status === 0);
 
+/**
+ * Remove a Chromium profile directory.
+ *
+ * Chromium does not stop writing the moment it is signalled, so a recursive
+ * remove straight after a kill intermittently fails with ENOTEMPTY: a directory
+ * that was empty when the walk reached it was not empty a millisecond later.
+ * Node retries exactly those errors itself — this only has to ask it to, and to
+ * not fail a run over a leftover temp directory.
+ */
+export function removeProfile(dir) {
+  if (!dir) return;
+  try {
+    rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+  } catch (error) {
+    console.warn(`· could not remove ${dir}: ${error.message}`);
+  }
+}
+
 /** Fail loudly and early if we cannot possibly run. */
 export function assertRunnable() {
   if (!existsSync(join(dist, "manifest.json"))) {
@@ -237,7 +255,7 @@ export async function launch({ width = 1280, height = 900, extension = true } = 
   } catch (e) {
     giveUp.abort();
     chrome.kill();
-    rmSync(profile, { recursive: true, force: true });
+    removeProfile(profile);
     throw e;
   }
   const browser = await CDP.connect(webSocketDebuggerUrl);
@@ -253,7 +271,7 @@ export async function launch({ width = 1280, height = 900, extension = true } = 
     close() {
       browser.close();
       chrome.kill();
-      rmSync(profile, { recursive: true, force: true });
+      removeProfile(profile);
     },
   };
 }
