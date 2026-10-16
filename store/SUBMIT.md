@@ -1,17 +1,17 @@
 # Submitting to the stores
 
-Everything that can be prepared has been. Two of the four listings are live; the
-other two are in review.
+Everything that can be prepared has been. Three of the four listings are live;
+the last one is in review.
 
 ## Store status
 
-State as of **2026-10-15**:
+State as of **2026-10-17**:
 
 | Store | Identifier | Status |
 |---|---|---|
 | Chrome Web Store | `dhgigpmjjookcmdbfmeodiafhdlbhfde` | **Live** |
 | Microsoft Edge Add-ons | `mjdmnnjekkkeihdjojdcbppmcpimkkbo` | **Live** |
-| Firefox Add-ons (AMO) | `superepo@ranjithraj.dev` | In review |
+| Firefox Add-ons (AMO) | `superepo@ranjithraj.dev` | **Live** |
 | Safari (App Store) | macOS & iOS companion app — `safari/SuperRepo.xcodeproj` | In review |
 
 Listing URLs:
@@ -22,11 +22,11 @@ Listing URLs:
 - Safari — the App Store link lands when review passes; one submission covers
   macOS and iOS. Until then the site's Safari button points at the release zip.
 
-Chrome and Edge are live and are the two wired into `site/index.html`; the Firefox
-and Safari URLs 404 for the public until their reviews clear. The Edge listing also
-backs **Edge for Android**, the Chrome listing backs every Chromium browser that
-loads the Chrome Web Store, the Firefox build covers **Firefox for Android**, and
-the one Safari app covers **macOS and iOS**.
+Chrome, Edge and Firefox are live and wired into `site/index.html`; only the Safari
+URL 404s for the public until its review clears. The Edge listing also backs **Edge
+for Android**, the Chrome listing backs every Chromium browser that loads the Chrome
+Web Store, the Firefox build covers **Firefox for Android**, and the one Safari app
+covers **macOS and iOS**.
 
 ## Done, and verified
 
@@ -47,11 +47,11 @@ the one Safari app covers **macOS and iOS**.
 - [x] Submitted to Chrome, Edge, Firefox and Safari — see *Store status* above
 - [x] Firefox listing enabled for **Firefox for Android** (AMO)
 
-## While the last two clear
+## While Safari clears
 
-- **Firefox** — code signing is optional for a listed add-on, but becomes required
-  the first time you update the listing. Worth enabling before that point. The
-  listing is already enabled for **Firefox for Android** (the manifest's 142 floor
+- **Firefox** — live. Code signing was optional for the listing and becomes
+  required the first time it is updated, so enable it before the next release.
+  The listing is enabled for **Firefox for Android** (the manifest's 142 floor
   covers it), so the one `dist/firefox` build covers desktop and Android.
 - **Safari** — the App Store listing goes through App Review like any Mac or iOS app
   (`safari-web-extension-packager --rebuild-project` adds the iOS target if the
@@ -78,7 +78,8 @@ free of scripts and event handlers.
       rejects a re-upload of an existing version number.
 - [ ] Re-run `npm run shots` if the UI changes — the store screenshots are checked
       in, so they can otherwise drift from what ships.
-- [ ] Point the site's install buttons at each store listing as it goes live; Chrome
-      and Edge are wired (`site/index.html`), Firefox and Safari follow.
+- [ ] Point the site's install buttons at each store listing as it goes live. Chrome,
+      Edge and Firefox are wired (`site/index.html`); Safari follows, and until then
+      its button downloads the build from the release page.
 - [ ] Partner outreach (`PARTNERS.md`) is the distribution plan. Publishing is the
       thing that makes it possible, not the thing that does it.

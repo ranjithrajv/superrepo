@@ -36,11 +36,12 @@ placement rather than the inline one.
 
 > Chromium is required for the smoke test; branded Chrome 137+ ignores `--load-extension`.
 
-**From a store.** Chrome and Edge are live — [Chrome Web Store](https://chromewebstore.google.com/detail/superrepo/dhgigpmjjookcmdbfmeodiafhdlbhfde) ·
-[Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/mjdmnnjekkkeihdjojdcbppmcpimkkbo).
-The Chrome listing also covers Brave, Vivaldi and Arc, and the Edge listing covers Edge for Android.
-Firefox and Safari are in review; until they clear, use the builds above. Listing copy and submission
-notes are in [`store/`](store/).
+**From a store.** Chrome, Edge and Firefox are live — [Chrome Web Store](https://chromewebstore.google.com/detail/superrepo/dhgigpmjjookcmdbfmeodiafhdlbhfde) ·
+[Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/mjdmnnjekkkeihdjojdcbppmcpimkkbo) ·
+[Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/superepo/).
+The Chrome listing also covers Brave, Vivaldi and Arc, the Edge listing covers Edge for Android, and
+the Firefox build covers Firefox for Android. Safari is in review; until it clears, use the build
+above. Listing copy and submission notes are in [`store/`](store/).
 
 ## Coverage
 
@@ -300,14 +301,14 @@ placement), and each service's own site accepting the URL we hand it.
 
 ## Store listings
 
-Chrome and Edge are live; Firefox and Safari are in review, as of **2026-10-15** — the
+Chrome, Edge and Firefox are live; Safari is in review, as of **2026-10-17** — the
 listing URLs are in [`store/SUBMIT.md`](store/SUBMIT.md).
 
 | Store | Identifier | Status |
 |---|---|---|
 | Chrome Web Store | `dhgigpmjjookcmdbfmeodiafhdlbhfde` | **Live** |
 | Microsoft Edge Add-ons | `mjdmnnjekkkeihdjojdcbppmcpimkkbo` | **Live** |
-| Firefox Add-ons (AMO) | `superepo@ranjithraj.dev` | In review |
+| Firefox Add-ons (AMO) | `superepo@ranjithraj.dev` | **Live** |
 | Safari (App Store) | macOS & iOS companion app | In review |
 
 The AMO slug is `superepo`; the add-on ID `superepo@ranjithraj.dev` is locked permanently at first
