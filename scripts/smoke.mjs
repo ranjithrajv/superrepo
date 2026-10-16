@@ -82,16 +82,19 @@ try {
   // The options page keeps only what has no in-page equivalent: your own
   // services, other hosts, and reset. Everything about the header buttons moved
   // to the panel, so asserting a service list here would assert removed UI.
-  const optionsUi = await waitFor(
-    options,
-    `(() => {
-      const cards = [...document.querySelectorAll("section.card h2")].map((h) => h.textContent.trim());
-      return cards.length ? cards.join("|") : "";
-    })()`,
-  );
+  //
+  // Wait for the whole set before comparing. Waiting for "at least one card" let
+  // a half-painted page satisfy the wait and then fail the comparison, which is a
+  // red run that says nothing about the options page.
   const expectedCards = ["Buttons and services", "Other sites", "Add your own", "Reset"];
-  if (optionsUi !== expectedCards.join("|")) {
-    failures.push(`options page sections were ${JSON.stringify(optionsUi)}, expected ${JSON.stringify(expectedCards.join("|"))}`);
+  const expected = expectedCards.join("|");
+  const cardsIn = `[...document.querySelectorAll("section.card h2")].map((h) => h.textContent.trim())`;
+  await waitFor(options, `(${cardsIn}.join("|") === ${JSON.stringify(expected)}) ? "ok" : ""`, 10000, {
+    quiet: true,
+  });
+  const optionsUi = await options.eval(`${cardsIn}.join("|")`);
+  if (optionsUi !== expected) {
+    failures.push(`options page sections were ${JSON.stringify(optionsUi)}, expected ${JSON.stringify(expected)}`);
   } else {
     notes.push(`options page renders its remaining sections (${expectedCards.length})`);
   }
