@@ -6,7 +6,7 @@
 Everything SuperRepo links to, and exactly what it sends each service. Generated from the
 same data the extension ships, so it cannot describe a tool the button doesn't offer.
 
-Examples below are built for **github.com/coderamp-labs/gitingest**. Probe status: Last probed **2026-11-08** — 22 ok, 2 aliased, 0 http error, 0 unreachable.
+Examples below are built for **github.com/coderamp-labs/gitingest**. Probe status: Last probed **2026-11-15** — 22 ok, 2 aliased, 0 http error, 0 unreachable.
 
 > Tool owners: this file is generated. To change a row, edit `src/catalog.js` and run
 > `npm run partners`. To be added at all, use the
